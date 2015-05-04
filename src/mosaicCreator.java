@@ -1,7 +1,7 @@
 import processing.core.*;
 
 public class mosaicCreator extends PApplet{
-	
+	//hello
 	PImage mainImage;
 	int[][] grid;
 	
