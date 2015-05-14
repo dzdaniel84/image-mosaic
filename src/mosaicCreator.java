@@ -24,12 +24,7 @@ public class mosaicCreator extends PApplet{
 		else
 			size((700/mainImage.height)*mainImage.width, 700);
 		
-<<<<<<< HEAD
 		grid = new float[width/gridBoxSize][height/gridBoxSize][3];
-=======
-		//creates 10 x 10
-		grid = new float[width/10][height/10][3];
->>>>>>> origin/master
 		
 		loadPixels();
 		
@@ -37,7 +32,6 @@ public class mosaicCreator extends PApplet{
 			for (int j = 0; j < height - height%gridBoxSize; j++){
 				int loc = i + j*width;
 				
-<<<<<<< HEAD
 				grid[i/gridBoxSize][j/gridBoxSize][R] += red(mainImage.pixels[loc]);
 				grid[i/gridBoxSize][j/gridBoxSize][G] += green(mainImage.pixels[loc]);
 				grid[i/gridBoxSize][j/gridBoxSize][B] += blue(mainImage.pixels[loc]);
@@ -45,17 +39,6 @@ public class mosaicCreator extends PApplet{
 		}
 		
 		for (int i = 0; i < grid.length; i++){
-=======
-				//Adds the rgb values of each pixel
-				grid[i/10][j/10][R] += red(mainImage.pixels[loc]);
-				grid[i/10][j/10][G] += green(mainImage.pixels[loc]);
-				grid[i/10][j/10][B] += blue(mainImage.pixels[loc]);
-			}
-		}
-		
-		//Calculates average r, g, b, value
-		for (int i = 0; i < grid.length; i++)
->>>>>>> origin/master
 			for (int j = 0; j < grid[0].length; j++){
 				grid[i][j][R] /= gridBoxSize * gridBoxSize;
 				grid[i][j][G] /= gridBoxSize * gridBoxSize;
@@ -63,8 +46,6 @@ public class mosaicCreator extends PApplet{
 			}
 		}
 		
-		for (int i : ReferenceMap.keySet())
-			System.out.println(i);
 		/*for (int i = 0; i < grid.length; i++){
 			for (int j = 0; j < grid[0].length; j++){
 				PImage img = getCorrectImage(grid[i][j]);
@@ -101,12 +82,6 @@ public class mosaicCreator extends PApplet{
 		float r = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][R];
 		float g = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][G];
 		float b = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][B];
-		
-<<<<<<< HEAD
-		//System.out.println(ReferenceMap.get(color(r, g, b)));
-=======
-		System.out.println((color(r, g, b)-color(r, g, b)%100) + " " + ReferenceMap.get(color(r, g, b)-color(r, g, b)%100));
->>>>>>> origin/master
 	}
 	
 	public void imageReferencer(){
@@ -128,14 +103,10 @@ public class mosaicCreator extends PApplet{
 			g /= img.pixels.length;
 			b /= img.pixels.length;
 			
-<<<<<<< HEAD
 			averageColorForEachImage[i][R] = r;
 			averageColorForEachImage[i][G] = g;
 			averageColorForEachImage[i][B] = b;
 			//ReferenceMap.put(color(r, g, b), i);
-=======
-			ReferenceMap.put(color(r, g, b) - color(r, g, b)%100, i);
->>>>>>> origin/master
 		}
 	}
 	
