@@ -15,11 +15,13 @@ public class mosaicCreator extends PApplet{
 		imageReferencer();
 		mainImage = loadImage("images/408.JPG");
 		
+		//Resizes the photo to just under 700 x 700 pixels
 		if (mainImage.width > mainImage.height)
 			size(700, (700/mainImage.width)*mainImage.height);
 		else
 			size((700/mainImage.height)*mainImage.width, 700);
 		
+		//creates 10 x 10
 		grid = new float[width/10][height/10][3];
 		
 		loadPixels();
@@ -28,12 +30,14 @@ public class mosaicCreator extends PApplet{
 			for (int j = 0; j < height - height%10; j++){
 				int loc = i + j*width;
 				
+				//Adds the rgb values of each pixel
 				grid[i/10][j/10][R] += red(mainImage.pixels[loc]);
 				grid[i/10][j/10][G] += green(mainImage.pixels[loc]);
 				grid[i/10][j/10][B] += blue(mainImage.pixels[loc]);
 			}
 		}
 		
+		//Calculates average r, g, b, value
 		for (int i = 0; i < grid.length; i++)
 			for (int j = 0; j < grid[0].length; j++){
 				grid[i][j][R] /= 100;
@@ -41,12 +45,14 @@ public class mosaicCreator extends PApplet{
 				grid[i][j][B] /= 100;
 			}
 		
-		for (int i = 0; i < grid.length; i++){
+		for (int i : ReferenceMap.keySet())
+			System.out.println(i);
+		/*for (int i = 0; i < grid.length; i++){
 			for (int j = 0; j < grid[0].length; j++){
 				PImage img = getCorrImage(grid[i][j]);
 				image(img, i*10, j*10, 10, 10);
 			}
-		}
+		}*/
 	}
 	
 	public void draw() {
@@ -78,12 +84,11 @@ public class mosaicCreator extends PApplet{
 		float g = grid[mouseX/10][mouseY/10][G];
 		float b = grid[mouseX/10][mouseY/10][B];
 		
-		System.out.println(ReferenceMap.get(color(r, g, b)));
+		System.out.println((color(r, g, b)-color(r, g, b)%100) + " " + ReferenceMap.get(color(r, g, b)-color(r, g, b)%100));
 	}
 	
 	public void imageReferencer(){
 		for (int i = 0; i < 409; i++){
-			System.out.println(i);
 			PImage img = loadImage("images/" + ((i < 10) ? "00"+i : (i < 100) ? "0"+i : i ) + ".JPG");
 			float r = 0, g = 0, b = 0;
 			
@@ -101,7 +106,7 @@ public class mosaicCreator extends PApplet{
 			g /= img.pixels.length;
 			b /= img.pixels.length;
 			
-			ReferenceMap.put(color(r, g, b), i);
+			ReferenceMap.put(color(r, g, b) - color(r, g, b)%100, i);
 		}
 	}
 	
