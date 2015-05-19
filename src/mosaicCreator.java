@@ -58,10 +58,10 @@ public class mosaicCreator extends PApplet{
 		
 		if (normalMode){
 			image(mainImage, 0, 0);
-			for (int i = 0; i < height; i += gridBoxSize)
+			/*for (int i = 0; i < height; i += gridBoxSize)
 				line(0, i, width, i);
 			for (int i = 0; i < width; i += gridBoxSize)
-				line(i, 0, i, height);
+				line(i, 0, i, height);*/
 		} else {
 			for (int i = 0; i < grid.length; i++){
 				for (int j = 0; j < grid[0].length; j++){
@@ -70,18 +70,18 @@ public class mosaicCreator extends PApplet{
 					float b = grid[i][j][B];
 					
 					fill(r, g, b);
-					rect(i*gridBoxSize, j*gridBoxSize, i*gridBoxSize+gridBoxSize, j*gridBoxSize+gridBoxSize);
+					noStroke();
+					float[] colors = {r,g,b}; 
+					PImage correctImage = getCorrectImage(colors);
+					image(correctImage,i*gridBoxSize, j*gridBoxSize, gridBoxSize, gridBoxSize);
+					//rect(i*gridBoxSize, j*gridBoxSize, i*gridBoxSize+gridBoxSize, j*gridBoxSize+gridBoxSize);
 				}
 			}
 		}
 	}
 	
 	public void mouseClicked() {
-		
 		normalMode = !normalMode;
-		float r = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][R];
-		float g = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][G];
-		float b = grid[mouseX/gridBoxSize][mouseY/gridBoxSize][B];
 	}
 	
 	public void imageReferencer(){
