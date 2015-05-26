@@ -16,6 +16,7 @@ public class mosaicCreator extends PApplet{
 		imageReferencer();
 		mainImage = loadImage("images/408.JPG");
 		
+		//Sets image to appropriate height
 		if (mainImage.width > mainImage.height)
 			size(APP_SIZE, (APP_SIZE/mainImage.width)*mainImage.height);
 		else
@@ -25,6 +26,7 @@ public class mosaicCreator extends PApplet{
 		
 		loadPixels();
 		
+		//Adds all the pixels together
 		System.out.println("Accumulating Pixels... ");
 		for (int i = 0; i < width - width%GRID_SIZE; i++){
 			for (int j = 0; j < height - height%GRID_SIZE; j++){
@@ -36,6 +38,7 @@ public class mosaicCreator extends PApplet{
 			}
 		}
 		
+		//Averages pixels out
 		System.out.println("Averaging Pixels... ");
 		for (int i = 0; i < grid.length; i++){
 			for (int j = 0; j < grid[0].length; j++){
@@ -52,7 +55,7 @@ public class mosaicCreator extends PApplet{
 		if (normalMode){
 			image(mainImage, 0, 0);
 		} else {
-
+			//draws mosaic
 			System.out.println("Matching Pixels... ");
 			for (int i = 0; i < grid.length; i++){
 				for (int j = 0; j < grid[0].length; j++){
@@ -67,6 +70,7 @@ public class mosaicCreator extends PApplet{
 		normalMode = !normalMode;
 	}
 	
+	//Loads all the pixels from all the images
 	public void imageReferencer(){
 		for (int i = 0; i < FILE_TOTAL; i++){
 			System.out.println("Loading Pixels... " + (double)(i*100)/FILE_TOTAL + "% Done");
@@ -89,6 +93,7 @@ public class mosaicCreator extends PApplet{
 		}
 	}
 	
+	//calculates the image closest to set color.
 	public PImage getCorrectImage(float[] colors){
 		float minDist = Integer.MAX_VALUE;
 		int minDistLoc = 0;
