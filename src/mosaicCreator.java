@@ -1,80 +1,63 @@
-import java.util.HashMap;
-
 import processing.core.*;
 
 public class mosaicCreator extends PApplet{
 	
 	static final int R = 0, G = 1, B = 2;
-	static final int gridBoxSize = 10;
+	static final int GRID_SIZE= 10;
+	static final int APP_SIZE = 700;
+	static final int FILE_TOTAL = 409;
 	
 	PImage mainImage = new PImage();
 	float[][][] grid;
 	boolean normalMode = true;
-	//static HashMap<Integer, Integer> ReferenceMap = new HashMap<Integer, Integer>();
-	float[][] averageColorForEachImage = new float[409][3];
+	float[][] avgImgColor = new float[409][3];
 	
-	//cdd
 	public void setup() {
 		imageReferencer();
 		mainImage = loadImage("images/408.JPG");
 		
-		//Resizes the photo to just under 700 x 700 pixels
 		if (mainImage.width > mainImage.height)
-			size(700, (700/mainImage.width)*mainImage.height);
+			size(APP_SIZE, (APP_SIZE/mainImage.width)*mainImage.height);
 		else
-			size((700/mainImage.height)*mainImage.width, 700);
+			size((APP_SIZE/mainImage.height)*mainImage.width, APP_SIZE);
 		
-		grid = new float[width/gridBoxSize][height/gridBoxSize][3];
+		grid = new float[width/GRID_SIZE][height/GRID_SIZE][3];
 		
 		loadPixels();
 		
-		for (int i = 0; i < width - width%gridBoxSize; i++){
-			for (int j = 0; j < height - height%gridBoxSize; j++){
+		System.out.println("Accumulating Pixels... ");
+		for (int i = 0; i < width - width%GRID_SIZE; i++){
+			for (int j = 0; j < height - height%GRID_SIZE; j++){
 				int loc = i + j*width;
 				
-				grid[i/gridBoxSize][j/gridBoxSize][R] += red(mainImage.pixels[loc]);
-				grid[i/gridBoxSize][j/gridBoxSize][G] += green(mainImage.pixels[loc]);
-				grid[i/gridBoxSize][j/gridBoxSize][B] += blue(mainImage.pixels[loc]);
+				grid[i/GRID_SIZE][j/GRID_SIZE][R] += red(mainImage.pixels[loc]);
+				grid[i/GRID_SIZE][j/GRID_SIZE][G] += green(mainImage.pixels[loc]);
+				grid[i/GRID_SIZE][j/GRID_SIZE][B] += blue(mainImage.pixels[loc]);
 			}
 		}
 		
+		System.out.println("Averaging Pixels... ");
 		for (int i = 0; i < grid.length; i++){
 			for (int j = 0; j < grid[0].length; j++){
-				grid[i][j][R] /= gridBoxSize * gridBoxSize;
-				grid[i][j][G] /= gridBoxSize * gridBoxSize;
-				grid[i][j][B] /= gridBoxSize * gridBoxSize;
+				grid[i][j][R] /= GRID_SIZE * GRID_SIZE;
+				grid[i][j][G] /= GRID_SIZE * GRID_SIZE;
+				grid[i][j][B] /= GRID_SIZE * GRID_SIZE;
 			}
 		}
 		
-		/*for (int i = 0; i < grid.length; i++){
-			for (int j = 0; j < grid[0].length; j++){
-				PImage img = getCorrectImage(grid[i][j]);
-				image(img, i*gridBoxSize, j*gridBoxSize, gridBoxSize, gridBoxSize);
-			}
-		}*/
 	}
 	
 	public void draw() {
 		
 		if (normalMode){
 			image(mainImage, 0, 0);
-			/*for (int i = 0; i < height; i += gridBoxSize)
-				line(0, i, width, i);
-			for (int i = 0; i < width; i += gridBoxSize)
-				line(i, 0, i, height);*/
 		} else {
+
+			System.out.println("Matching Pixels... ");
 			for (int i = 0; i < grid.length; i++){
 				for (int j = 0; j < grid[0].length; j++){
-					float r = grid[i][j][R];
-					float g = grid[i][j][G];
-					float b = grid[i][j][B];
-					
-					fill(r, g, b);
-					noStroke();
-					float[] colors = {r,g,b}; 
-					PImage correctImage = getCorrectImage(colors);
-					image(correctImage,i*gridBoxSize, j*gridBoxSize, gridBoxSize, gridBoxSize);
-					//rect(i*gridBoxSize, j*gridBoxSize, i*gridBoxSize+gridBoxSize, j*gridBoxSize+gridBoxSize);
+					float[] colors = {grid[i][j][R], grid[i][j][G], grid[i][j][B]};
+					image(getCorrectImage(colors), i*GRID_SIZE, j*GRID_SIZE, GRID_SIZE, GRID_SIZE);
 				}
 			}
 		}
@@ -85,7 +68,8 @@ public class mosaicCreator extends PApplet{
 	}
 	
 	public void imageReferencer(){
-		for (int i = 0; i < 409; i++){
+		for (int i = 0; i < FILE_TOTAL; i++){
+			System.out.println("Loading Pixels... " + (double)(i*100)/FILE_TOTAL + "% Done");
 			PImage img = loadImage("images/" + ((i < 10) ? "00"+i : (i < 100) ? "0"+i : i ) + ".JPG");
 			float r = 0, g = 0, b = 0;
 			
@@ -99,44 +83,30 @@ public class mosaicCreator extends PApplet{
 					b += blue(img.pixels[loc]);
 				}
 			
-			r /= img.pixels.length;
-			g /= img.pixels.length;
-			b /= img.pixels.length;
-			
-			averageColorForEachImage[i][R] = r;
-			averageColorForEachImage[i][G] = g;
-			averageColorForEachImage[i][B] = b;
-			//ReferenceMap.put(color(r, g, b), i);
+			avgImgColor[i][R] = r / img.pixels.length;
+			avgImgColor[i][G] = g / img.pixels.length;
+			avgImgColor[i][B] = b / img.pixels.length;
 		}
 	}
 	
-	//Precondition: i is an array with 3 values
 	public PImage getCorrectImage(float[] colors){
-		float minDistance = Integer.MAX_VALUE;
-		int minDistanceIndex = 0;
-		for (int i = 0; i < averageColorForEachImage.length; i++ ) {
-			float distance = getColorDistance(colors,averageColorForEachImage[i]); 
-			if (distance < minDistance) {
-				minDistance = distance;
-				minDistanceIndex = i;
+		float minDist = Integer.MAX_VALUE;
+		int minDistLoc = 0;
+		for (int i = 0; i < avgImgColor.length; i++ ) {
+			float curDist = getColorDistance(colors, avgImgColor[i]);
+			
+			if (curDist < minDist) {
+				minDist = curDist;
+				minDistLoc = i;
 			}
 		}
-		PImage img = loadImage("images/" + ((minDistanceIndex < 10) ? "00"+minDistanceIndex : (minDistanceIndex < 100) ? "0"+minDistanceIndex : minDistanceIndex ) + ".JPG");
-		return img;
+		return loadImage("images/" + ((minDistLoc < 10) ? "00"+minDistLoc : (minDistLoc < 100) ? "0"+minDistLoc : minDistLoc ) + ".JPG");
 	}
 	
-	public float getColorDistance(float[] colorA, float[] colorB){
-		double redA = colorA[0];
-		double redB = colorB[0];
-		double greenA = colorA[1];
-		double greenB = colorB[1];
-		double blueA = colorA[2];
-		double blueB = colorB[2];
-		double output = Math.sqrt(Math.pow(redA-redB, 2)
-					  + Math.pow(greenA-greenB, 2)
-					  + Math.pow(blueA-blueB, 2));				
-		return (float)output;				
+	public float getColorDistance(float[] a, float[] b){	
+		return (float) Math.sqrt(Math.pow(a[R]-b[R], 2) + Math.pow(a[G]-b[G], 2) + Math.pow(a[B]-a[B], 2));				
 	}
+	
 	public static void main(String[] args){
 		PApplet.main(new String[] {"mosaicCreator"});
 	}
